@@ -9,6 +9,8 @@ extern "C" {
 
 unsigned int edit_distance_c(const char *a, const size_t asize, const char *b, const size_t bsize);
 
+void edit_distance_matrix(char **words, const size_t *sizes, size_t count);
+
 #ifdef __cplusplus
 }
 #endif

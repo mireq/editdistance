@@ -258,3 +258,20 @@ unsigned int edit_distance_c(const char *a, const size_t asize, const char *b, c
 	return edit_distance<string>(sa, sb, MAPOPTION::MAP);
 }
 
+void edit_distance_matrix(char **words, const size_t *sizes, size_t count) {
+	unsigned int dist = 0;
+	vector<string> cpp_words(count);
+	cpp_words.resize(count);
+	for (size_t i = 0; i < count; ++i) {
+		cpp_words[i] = string(words[i], sizes[i]);
+	}
+
+	for (size_t i = 0; i < count; ++i) {
+		const string word = cpp_words[i];
+		cout << "." << flush;
+		for (size_t j = 0; j < count; ++j) {
+			dist += edit_distance<string>(word, cpp_words[j], MAPOPTION::MAP);
+		}
+	}
+	cout << dist << endl;
+}
