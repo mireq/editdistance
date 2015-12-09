@@ -20,7 +20,7 @@ cpdef unsigned int eval(object a, object b):
 
 cpdef unsigned int[:,:] distance_matrix(object words):
     cdef unsigned int[:,:] result = cvarray(shape=(len(words), len(words)), itemsize=sizeof(unsigned int), format="I")
-    cdef unsigned int i, j;
+    cdef unsigned int i, j, dist;
     cdef unsigned int[:] lengths = cvarray(shape=(len(words),), itemsize=sizeof(unsigned int), format="I")
     cdef list words_b = []
 
@@ -31,8 +31,11 @@ cpdef unsigned int[:,:] distance_matrix(object words):
     cdef char **c_words = to_cstring_array(words_b)
 
     for i in xrange(len(words)):
-        for j in xrange(len(words)):
-            result[i, j] = edit_distance_c(c_words[i], lengths[i], c_words[j], lengths[j])
+        result[i, i] = 0
+        for j in xrange(i + 1, len(words)):
+            dist = edit_distance_c(c_words[i], lengths[i], c_words[j], lengths[j])
+            result[i, j] = dist
+            result[j, i] = dist
 
     free(c_words)
     return result

@@ -960,6 +960,8 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_int(unsigned int value)
 
 static CYTHON_INLINE unsigned int __Pyx_PyInt_As_unsigned_int(PyObject *);
 
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
+
 static PyObject *__pyx_memview_get_unsigned_int(const char *itemp);
 static int __pyx_memview_set_unsigned_int(const char *itemp, PyObject *obj);
 
@@ -983,8 +985,6 @@ static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, int level);
-
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value);
 
 static CYTHON_INLINE char __Pyx_PyInt_As_char(PyObject *);
 
@@ -1516,7 +1516,7 @@ static PyObject *__pyx_pf_12editdistance_8bycython_eval(CYTHON_UNUSED PyObject *
  * 
  * cpdef unsigned int[:,:] distance_matrix(object words):             # <<<<<<<<<<<<<<
  *     cdef unsigned int[:,:] result = cvarray(shape=(len(words), len(words)), itemsize=sizeof(unsigned int), format="I")
- *     cdef unsigned int i, j;
+ *     cdef unsigned int i, j, dist;
  */
 
 static PyObject *__pyx_pw_12editdistance_8bycython_3distance_matrix(PyObject *__pyx_self, PyObject *__pyx_v_words); /*proto*/
@@ -1524,6 +1524,7 @@ static __Pyx_memviewslice __pyx_f_12editdistance_8bycython_distance_matrix(PyObj
   __Pyx_memviewslice __pyx_v_result = { 0, 0, { 0 }, { 0 }, { 0 } };
   unsigned int __pyx_v_i;
   unsigned int __pyx_v_j;
+  unsigned int __pyx_v_dist;
   __Pyx_memviewslice __pyx_v_lengths = { 0, 0, { 0 }, { 0 }, { 0 } };
   PyObject *__pyx_v_words_b = 0;
   char **__pyx_v_c_words;
@@ -1546,6 +1547,10 @@ static __Pyx_memviewslice __pyx_f_12editdistance_8bycython_distance_matrix(PyObj
   unsigned int __pyx_t_15;
   unsigned int __pyx_t_16;
   unsigned int __pyx_t_17;
+  unsigned int __pyx_t_18;
+  unsigned int __pyx_t_19;
+  unsigned int __pyx_t_20;
+  unsigned int __pyx_t_21;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
@@ -1555,7 +1560,7 @@ static __Pyx_memviewslice __pyx_f_12editdistance_8bycython_distance_matrix(PyObj
  * 
  * cpdef unsigned int[:,:] distance_matrix(object words):
  *     cdef unsigned int[:,:] result = cvarray(shape=(len(words), len(words)), itemsize=sizeof(unsigned int), format="I")             # <<<<<<<<<<<<<<
- *     cdef unsigned int i, j;
+ *     cdef unsigned int i, j, dist;
  *     cdef unsigned int[:] lengths = cvarray(shape=(len(words),), itemsize=sizeof(unsigned int), format="I")
  */
   __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 22; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -1593,7 +1598,7 @@ static __Pyx_memviewslice __pyx_f_12editdistance_8bycython_distance_matrix(PyObj
 
   /* "editdistance/bycython.pyx":24
  *     cdef unsigned int[:,:] result = cvarray(shape=(len(words), len(words)), itemsize=sizeof(unsigned int), format="I")
- *     cdef unsigned int i, j;
+ *     cdef unsigned int i, j, dist;
  *     cdef unsigned int[:] lengths = cvarray(shape=(len(words),), itemsize=sizeof(unsigned int), format="I")             # <<<<<<<<<<<<<<
  *     cdef list words_b = []
  * 
@@ -1626,7 +1631,7 @@ static __Pyx_memviewslice __pyx_f_12editdistance_8bycython_distance_matrix(PyObj
   __pyx_t_7.data = NULL;
 
   /* "editdistance/bycython.pyx":25
- *     cdef unsigned int i, j;
+ *     cdef unsigned int i, j, dist;
  *     cdef unsigned int[:] lengths = cvarray(shape=(len(words),), itemsize=sizeof(unsigned int), format="I")
  *     cdef list words_b = []             # <<<<<<<<<<<<<<
  * 
@@ -1700,8 +1705,8 @@ static __Pyx_memviewslice __pyx_f_12editdistance_8bycython_distance_matrix(PyObj
  *     cdef char **c_words = to_cstring_array(words_b)
  * 
  *     for i in xrange(len(words)):             # <<<<<<<<<<<<<<
- *         for j in xrange(len(words)):
- *             result[i, j] = edit_distance_c(c_words[i], lengths[i], c_words[j], lengths[j])
+ *         result[i, i] = 0
+ *         for j in xrange(i + 1, len(words)):
  */
   __pyx_t_2 = PyObject_Length(__pyx_v_words); if (unlikely(__pyx_t_2 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 33; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   for (__pyx_t_8 = 0; __pyx_t_8 < __pyx_t_2; __pyx_t_8+=1) {
@@ -1710,57 +1715,102 @@ static __Pyx_memviewslice __pyx_f_12editdistance_8bycython_distance_matrix(PyObj
     /* "editdistance/bycython.pyx":34
  * 
  *     for i in xrange(len(words)):
- *         for j in xrange(len(words)):             # <<<<<<<<<<<<<<
- *             result[i, j] = edit_distance_c(c_words[i], lengths[i], c_words[j], lengths[j])
+ *         result[i, i] = 0             # <<<<<<<<<<<<<<
+ *         for j in xrange(i + 1, len(words)):
+ *             dist = edit_distance_c(c_words[i], lengths[i], c_words[j], lengths[j])
+ */
+    __pyx_t_13 = __pyx_v_i;
+    __pyx_t_14 = __pyx_v_i;
+    __pyx_t_11 = -1;
+    if (unlikely(__pyx_t_13 >= (size_t)__pyx_v_result.shape[0])) __pyx_t_11 = 0;
+    if (unlikely(__pyx_t_14 >= (size_t)__pyx_v_result.shape[1])) __pyx_t_11 = 1;
+    if (unlikely(__pyx_t_11 != -1)) {
+      __Pyx_RaiseBufferIndexError(__pyx_t_11);
+      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    }
+    *((unsigned int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_result.data + __pyx_t_13 * __pyx_v_result.strides[0]) ) + __pyx_t_14 * __pyx_v_result.strides[1]) )) = 0;
+
+    /* "editdistance/bycython.pyx":35
+ *     for i in xrange(len(words)):
+ *         result[i, i] = 0
+ *         for j in xrange(i + 1, len(words)):             # <<<<<<<<<<<<<<
+ *             dist = edit_distance_c(c_words[i], lengths[i], c_words[j], lengths[j])
+ *             result[i, j] = dist
+ */
+    __pyx_t_9 = PyObject_Length(__pyx_v_words); if (unlikely(__pyx_t_9 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 35; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    for (__pyx_t_15 = (__pyx_v_i + 1); __pyx_t_15 < __pyx_t_9; __pyx_t_15+=1) {
+      __pyx_v_j = __pyx_t_15;
+
+      /* "editdistance/bycython.pyx":36
+ *         result[i, i] = 0
+ *         for j in xrange(i + 1, len(words)):
+ *             dist = edit_distance_c(c_words[i], lengths[i], c_words[j], lengths[j])             # <<<<<<<<<<<<<<
+ *             result[i, j] = dist
+ *             result[j, i] = dist
+ */
+      __pyx_t_16 = __pyx_v_i;
+      __pyx_t_11 = -1;
+      if (unlikely(__pyx_t_16 >= (size_t)__pyx_v_lengths.shape[0])) __pyx_t_11 = 0;
+      if (unlikely(__pyx_t_11 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_11);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 36; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      __pyx_t_17 = __pyx_v_j;
+      __pyx_t_11 = -1;
+      if (unlikely(__pyx_t_17 >= (size_t)__pyx_v_lengths.shape[0])) __pyx_t_11 = 0;
+      if (unlikely(__pyx_t_11 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_11);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 36; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      __pyx_v_dist = edit_distance_c((__pyx_v_c_words[__pyx_v_i]), (*((unsigned int *) ( /* dim=0 */ (__pyx_v_lengths.data + __pyx_t_16 * __pyx_v_lengths.strides[0]) ))), (__pyx_v_c_words[__pyx_v_j]), (*((unsigned int *) ( /* dim=0 */ (__pyx_v_lengths.data + __pyx_t_17 * __pyx_v_lengths.strides[0]) ))));
+
+      /* "editdistance/bycython.pyx":37
+ *         for j in xrange(i + 1, len(words)):
+ *             dist = edit_distance_c(c_words[i], lengths[i], c_words[j], lengths[j])
+ *             result[i, j] = dist             # <<<<<<<<<<<<<<
+ *             result[j, i] = dist
  * 
  */
-    __pyx_t_9 = PyObject_Length(__pyx_v_words); if (unlikely(__pyx_t_9 == -1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    for (__pyx_t_13 = 0; __pyx_t_13 < __pyx_t_9; __pyx_t_13+=1) {
-      __pyx_v_j = __pyx_t_13;
+      __pyx_t_18 = __pyx_v_i;
+      __pyx_t_19 = __pyx_v_j;
+      __pyx_t_11 = -1;
+      if (unlikely(__pyx_t_18 >= (size_t)__pyx_v_result.shape[0])) __pyx_t_11 = 0;
+      if (unlikely(__pyx_t_19 >= (size_t)__pyx_v_result.shape[1])) __pyx_t_11 = 1;
+      if (unlikely(__pyx_t_11 != -1)) {
+        __Pyx_RaiseBufferIndexError(__pyx_t_11);
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 37; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      }
+      *((unsigned int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_result.data + __pyx_t_18 * __pyx_v_result.strides[0]) ) + __pyx_t_19 * __pyx_v_result.strides[1]) )) = __pyx_v_dist;
 
-      /* "editdistance/bycython.pyx":35
- *     for i in xrange(len(words)):
- *         for j in xrange(len(words)):
- *             result[i, j] = edit_distance_c(c_words[i], lengths[i], c_words[j], lengths[j])             # <<<<<<<<<<<<<<
+      /* "editdistance/bycython.pyx":38
+ *             dist = edit_distance_c(c_words[i], lengths[i], c_words[j], lengths[j])
+ *             result[i, j] = dist
+ *             result[j, i] = dist             # <<<<<<<<<<<<<<
  * 
  *     free(c_words)
  */
-      __pyx_t_14 = __pyx_v_i;
+      __pyx_t_20 = __pyx_v_j;
+      __pyx_t_21 = __pyx_v_i;
       __pyx_t_11 = -1;
-      if (unlikely(__pyx_t_14 >= (size_t)__pyx_v_lengths.shape[0])) __pyx_t_11 = 0;
+      if (unlikely(__pyx_t_20 >= (size_t)__pyx_v_result.shape[0])) __pyx_t_11 = 0;
+      if (unlikely(__pyx_t_21 >= (size_t)__pyx_v_result.shape[1])) __pyx_t_11 = 1;
       if (unlikely(__pyx_t_11 != -1)) {
         __Pyx_RaiseBufferIndexError(__pyx_t_11);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 35; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 38; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       }
-      __pyx_t_15 = __pyx_v_j;
-      __pyx_t_11 = -1;
-      if (unlikely(__pyx_t_15 >= (size_t)__pyx_v_lengths.shape[0])) __pyx_t_11 = 0;
-      if (unlikely(__pyx_t_11 != -1)) {
-        __Pyx_RaiseBufferIndexError(__pyx_t_11);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 35; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      }
-      __pyx_t_16 = __pyx_v_i;
-      __pyx_t_17 = __pyx_v_j;
-      __pyx_t_11 = -1;
-      if (unlikely(__pyx_t_16 >= (size_t)__pyx_v_result.shape[0])) __pyx_t_11 = 0;
-      if (unlikely(__pyx_t_17 >= (size_t)__pyx_v_result.shape[1])) __pyx_t_11 = 1;
-      if (unlikely(__pyx_t_11 != -1)) {
-        __Pyx_RaiseBufferIndexError(__pyx_t_11);
-        {__pyx_filename = __pyx_f[0]; __pyx_lineno = 35; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      }
-      *((unsigned int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_result.data + __pyx_t_16 * __pyx_v_result.strides[0]) ) + __pyx_t_17 * __pyx_v_result.strides[1]) )) = edit_distance_c((__pyx_v_c_words[__pyx_v_i]), (*((unsigned int *) ( /* dim=0 */ (__pyx_v_lengths.data + __pyx_t_14 * __pyx_v_lengths.strides[0]) ))), (__pyx_v_c_words[__pyx_v_j]), (*((unsigned int *) ( /* dim=0 */ (__pyx_v_lengths.data + __pyx_t_15 * __pyx_v_lengths.strides[0]) ))));
+      *((unsigned int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_result.data + __pyx_t_20 * __pyx_v_result.strides[0]) ) + __pyx_t_21 * __pyx_v_result.strides[1]) )) = __pyx_v_dist;
     }
   }
 
-  /* "editdistance/bycython.pyx":37
- *             result[i, j] = edit_distance_c(c_words[i], lengths[i], c_words[j], lengths[j])
+  /* "editdistance/bycython.pyx":40
+ *             result[j, i] = dist
  * 
  *     free(c_words)             # <<<<<<<<<<<<<<
  *     return result
  */
   free(__pyx_v_c_words);
 
-  /* "editdistance/bycython.pyx":38
+  /* "editdistance/bycython.pyx":41
  * 
  *     free(c_words)
  *     return result             # <<<<<<<<<<<<<<
@@ -1774,7 +1824,7 @@ static __Pyx_memviewslice __pyx_f_12editdistance_8bycython_distance_matrix(PyObj
  * 
  * cpdef unsigned int[:,:] distance_matrix(object words):             # <<<<<<<<<<<<<<
  *     cdef unsigned int[:,:] result = cvarray(shape=(len(words), len(words)), itemsize=sizeof(unsigned int), format="I")
- *     cdef unsigned int i, j;
+ *     cdef unsigned int i, j, dist;
  */
 
   /* function exit code */
@@ -15624,6 +15674,32 @@ raise_neg_overflow:
     return (unsigned int) -1;
 }
 
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
+    const long neg_one = (long) -1, const_zero = 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(long) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(long) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+        } else if (sizeof(long) <= sizeof(unsigned long long)) {
+            return PyLong_FromUnsignedLongLong((unsigned long long) value);
+        }
+    } else {
+        if (sizeof(long) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(long) <= sizeof(long long)) {
+            return PyLong_FromLongLong((long long) value);
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(long),
+                                     little, !is_unsigned);
+    }
+}
+
 static PyObject *__pyx_memview_get_unsigned_int(const char *itemp) {
     return (PyObject *) __Pyx_PyInt_From_unsigned_int(*(unsigned int *) itemp);
 }
@@ -15962,32 +16038,6 @@ bad:
     Py_XDECREF(empty_list);
     Py_XDECREF(empty_dict);
     return module;
-}
-
-static CYTHON_INLINE PyObject* __Pyx_PyInt_From_long(long value) {
-    const long neg_one = (long) -1, const_zero = 0;
-    const int is_unsigned = neg_one > const_zero;
-    if (is_unsigned) {
-        if (sizeof(long) < sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(long) <= sizeof(unsigned long)) {
-            return PyLong_FromUnsignedLong((unsigned long) value);
-        } else if (sizeof(long) <= sizeof(unsigned long long)) {
-            return PyLong_FromUnsignedLongLong((unsigned long long) value);
-        }
-    } else {
-        if (sizeof(long) <= sizeof(long)) {
-            return PyInt_FromLong((long) value);
-        } else if (sizeof(long) <= sizeof(long long)) {
-            return PyLong_FromLongLong((long long) value);
-        }
-    }
-    {
-        int one = 1; int little = (int)*(unsigned char *)&one;
-        unsigned char *bytes = (unsigned char *)&value;
-        return _PyLong_FromByteArray(bytes, sizeof(long),
-                                     little, !is_unsigned);
-    }
 }
 
 static CYTHON_INLINE char __Pyx_PyInt_As_char(PyObject *x) {
