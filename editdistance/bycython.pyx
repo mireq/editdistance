@@ -6,17 +6,7 @@ from libc.stdint cimport int64_t
 
 
 cdef extern from "./_editdistance.h":
-    unsigned int edit_distance(const int64_t *a, const unsigned int asize, const int64_t *b, const unsigned int bsize)
+    unsigned int edit_distance_c(char *a, const size_t asize, char *b, size_t bsize)
 
 cpdef unsigned int eval(object a, object b):
-    cdef unsigned int i, dist
-    cdef int64_t *al = <int64_t *>malloc(len(a) * sizeof(int64_t))
-    for i in range(len(a)):
-        al[i] = hash(a[i])
-    cdef int64_t *bl = <int64_t *>malloc(len(b) * sizeof(int64_t))
-    for i in range(len(b)):
-        bl[i] = hash(b[i])
-    dist = edit_distance(al, len(a), bl, len(b))
-    free(al)
-    free(bl)
-    return dist
+    return edit_distance_c(a, len(a), b, len(b))
