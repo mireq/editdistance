@@ -27,8 +27,8 @@ ext_modules = [Extension('editdistance.bycython',
                          ['editdistance/_editdistance.cpp', 'editdistance/bycython.cpp'],
                          include_dirs=['./editdistance'],
                          language="c++",
-                         extra_compile_args=["-std=c++11"],
-                         extra_link_args=["-std=c++11"])]
+                         extra_compile_args=["-std=c++11", "-O3"],
+                         extra_link_args=["-std=c++11", "-O3"])]
 
 setup(name="editdistance",
       version='0.2',
